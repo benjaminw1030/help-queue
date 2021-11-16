@@ -1,39 +1,61 @@
-import React from 'react';
-import NewTicketForm from './NewTicketForm';
-import TicketList from './TicketList';
+import React from "react";
+import NewTicketForm from "./NewTicketForm";
+import TicketList from "./TicketList";
+import Confirmation from "./Confirmation";
 
 class TicketControl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVisibleOnPage: false
+      step: 1,
     };
   }
 
   handleClick = () => {
-    this.setState(prevState => ({
-      formVisibleOnPage: !prevState.formVisibleOnPage
-    }));
-  }
-
-  render(){
-    let currentlyVisibleState = null;
-    let buttonText = null;
-    if (this.state.formVisibleOnPage) {
-      currentlyVisibleState = <NewTicketForm />;
-      buttonText = "Return to Ticket List";
+    if (this.state.step < 5) {
+      this.setState((prevState) => ({
+        step: prevState.step + 1,
+      }));
     } else {
-      currentlyVisibleState = <TicketList />;
-      buttonText = "Add Ticket";
+      this.setState({
+        step: 1,
+      });
     }
-    return (
-      <React.Fragment>
-        {currentlyVisibleState}
-        <button onClick={this.handleClick}>{buttonText}</button>
-      </React.Fragment>
-    );
-  }
+  };
 
+  resetClick = () => {
+    this.setState({
+      step: 1,
+    });
+  };
+
+  render() {
+    let currentDisplay = null;
+    if (this.state.step === 1) {
+      currentDisplay = (
+        <>
+          <TicketList />
+          <button onClick={this.handleClick}>Add a Ticket</button>{" "}
+        </>
+      );
+    } else if (this.state.step > 1 && this.state.step < 5) {
+      currentDisplay = (
+        <Confirmation
+          step={this.state.step}
+          handleClick={this.handleClick}
+          resetClick={this.resetClick}
+        />
+      );
+    } else {
+      currentDisplay = (
+        <>
+          <NewTicketForm />
+          <button onClick={this.handleClick}>Return to Ticket List</button>
+        </>
+      );
+    }
+    return currentDisplay;
+  }
 }
 
 export default TicketControl;
